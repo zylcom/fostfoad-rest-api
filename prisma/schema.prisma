@@ -1,0 +1,244 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
+  relationMode      = "prisma"
+}
+
+model User {
+  id          Int             @id() @default(autoincrement())
+  username    String          @unique @db.VarChar(100)
+  phonenumber String          @db.VarChar(100)
+  password    String          @db.VarChar(100)
+  profile     Profile?
+  cart        Cart?
+  reviews     Review[]
+  likes       LikeOnProduct[]
+  orders      Order[]
+
+  @@map("users")
+}
+
+model Profile {
+  id      Int     @id() @default(autoincrement())
+  name    String  @db.VarChar(100)
+  address String? @db.VarChar(100)
+  avatar  String  @default("avatar-default.jpg") @db.VarChar(100)
+  user    User    @relation(fields: [userId], references: [id])
+  userId  Int     @unique
+
+  @@map("profiles")
+}
+
+model Product {
+  id            Int             @id() @default(autoincrement())
+  name          String          @db.VarChar(100)
+  slug          String          @unique @db.VarChar(100)
+  image         String          @default("https://res.cloudinary.com/dk9bcf16t/image/upload/v1699505599/default_v5bzrz.jpg") @db.VarChar(255)
+  price         Int
+  averageRating Float?
+  description   String?         @db.Text
+  ingredients   String?         @db.Text
+  categorySlug  String
+  category      Category        @relation(fields: [categorySlug], references: [slug])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  tags          Tag[]
+  cartItems     CartItem[]
+  reviews       Review[]
+  likes         LikeOnProduct[]
+  OrderItem     OrderItem[]
+
+  @@index([categorySlug])
+  @@map("products")
+}
+
+model Category {
+  id        Int       @id() @default(autoincrement())
+  name      String    @db.VarChar(100)
+  slug      String    @unique @db.VarChar(100)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+model Tag {
+  id        Int       @id() @default(autoincrement())
+  name      String    @db.VarChar(100)
+  slug      String    @unique @db.VarChar(100)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("tags")
+}
+
+model TagOnProduct {
+  id        Int      @id() @default(autoincrement())
+  productId Int?
+  tagId     Int
+  createdAt DateTime @default(now())
+
+  @@unique([productId, tagId])
+  @@index([productId])
+  @@index([tagId])
+  @@map("tags_on_products")
+}
+
+model Cart {
+  id         Int        @id() @default(autoincrement())
+  user       User       @relation(fields: [username], references: [username])
+  username   String     @unique @db.VarChar(100)
+  cartItems  CartItem[]
+  totalPrice Int        @default(0)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@map("carts")
+}
+
+model CartItem {
+  id          Int      @id() @default(autoincrement())
+  cart        Cart     @relation(fields: [cartId], references: [id])
+  cartId      Int
+  product     Product  @relation(fields: [productSlug], references: [slug])
+  productSlug String
+  quantity    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([productSlug, cartId], name: "item")
+  @@index([cartId])
+  @@map("cart_items")
+}
+
+model OrderItem {
+  id          Int      @id() @default(autoincrement())
+  order       Order    @relation(fields: [orderId], references: [id])
+  orderId     String
+  product     Product? @relation(fields: [productSlug], references: [slug])
+  productSlug String?
+  productName String   @db.VarChar(100)
+  price       Int
+  quantity    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([productSlug])
+  @@map("order_items")
+}
+
+model Order {
+  id               String      @id() @default(uuid())
+  user             User?       @relation(fields: [username], references: [username])
+  username         String?
+  name             String?
+  guestId          String?
+  email            String?
+  phone            String      @db.VarChar(25)
+  status           String      @default("uncomplete") @db.VarChar(50)
+  transactionToken String?
+  total            Int
+  subTotal         Int
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  items            OrderItem[]
+  shipment         Shipment?
+  payment          Payment?
+
+  @@index([username])
+  @@map("orders")
+}
+
+model Payment {
+  id            Int      @id() @default(autoincrement())
+  status        String   @default("unpaid") @db.VarChar(50)
+  method        String?  @db.VarChar(50)
+  name          String
+  signatureKey  String?
+  transactionId String?
+  store         String?
+  currency      String?
+  username      String?
+  guestId       String?
+  amount        Int
+  order         Order    @relation(fields: [orderId], references: [id])
+  orderId       String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("payments")
+}
+
+model Shipment {
+  id         Int       @id() @default(autoincrement())
+  order      Order     @relation(fields: [orderId], references: [id])
+  orderId    String    @unique
+  address    String    @db.VarChar(100)
+  city       String    @db.VarChar(100)
+  detail     String    @db.Text
+  state      String    @db.VarChar(100)
+  postalCode String    @db.VarChar(25)
+  status     String    @default("onprogress") @db.VarChar(50)
+  method     String    @db.VarChar(50)
+  name       String    @db.VarChar(100)
+  phone      String    @db.VarChar(25)
+  cost       Int       @default(0)
+  arrivedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@map("shipments")
+}
+
+model Review {
+  id          Int      @id() @default(autoincrement())
+  product     Product  @relation(fields: [productSlug], references: [slug])
+  productSlug String
+  user        User     @relation(fields: [username], references: [username])
+  username    String
+  description String?  @db.Text
+  rating      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([productSlug, username], name: "review")
+  @@index([username])
+  @@map("reviews")
+}
+
+model LikeOnProduct {
+  id          Int      @id() @default(autoincrement())
+  product     Product  @relation(fields: [productSlug], references: [slug])
+  productSlug String
+  user        User     @relation(fields: [username], references: [username])
+  username    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([productSlug, username], name: "like")
+  @@index([username])
+  @@map("likes")
+}
+
+model Feedback {
+  id          Int      @id() @default(autoincrement())
+  username    String?
+  guestId     String?
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("feedbacks")
+}

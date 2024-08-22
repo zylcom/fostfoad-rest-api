@@ -1,14 +1,29 @@
 {
+  "author": "sabilillah <sabilillah272@gmail.com>",
   "name": "fostfoad-rest-api",
-  "scripts": {
-    "dev": "tsx watch src/index.ts"
+  "version": "1.0.0",
+  "description": "RESTful API",
+  "main": "api/index.js",
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "postinstall": "prisma generate"
+  },
+  "keywords": [
+    "hono",
+    "nodejs",
+    "prisma"
+  ],
   "dependencies": {
     "@hono/node-server": "^1.12.1",
+    "@prisma/client": "^5.18.0",
     "hono": "^4.5.8"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
+    "@types/node": "^20.16.1",
+    "prisma": "^5.18.0",
     "tsx": "^4.7.1",
     "typescript": "^5.5.4"
   }
