@@ -3,7 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "outDir": "dist",
+    "outDir": "api",
     "strict": true,
     "skipLibCheck": true,
     "types": ["node"],

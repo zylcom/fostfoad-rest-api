@@ -3,14 +3,14 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { jwt } from "hono/jwt";
 import { logger } from "hono/logger";
-import usersRoutes from "../src/routes/users";
-import cartsRoutes from "../src/routes/carts";
-import authRoutes from "../src/routes/auth";
-import cartItemsRoutes from "../src/routes/cartItems";
-import reviewsRoutes from "../src/routes/reviews";
-import likesRoutes from "../src/routes/likes";
+import usersRoutes from "./src/routes/users";
+import cartsRoutes from "./src/routes/carts";
+import authRoutes from "./src/routes/auth";
+import cartItemsRoutes from "./src/routes/cartItems";
+import reviewsRoutes from "./src/routes/reviews";
+import likesRoutes from "./src/routes/likes";
 import { HTTPException } from "hono/http-exception";
-import { authMiddleware } from "../src/middlewares";
+import { authMiddleware } from "./src/middlewares";
 import { Prisma } from "@prisma/client";
 
 declare module "hono" {
