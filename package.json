@@ -13,7 +13,8 @@
     "build": "tsc",
     "postinstall": "prisma generate",
     "format": "prettier -w .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "start": "node --import=extensionless/register api/index.js"
   },
   "keywords": [
     "hono",
