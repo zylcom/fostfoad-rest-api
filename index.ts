@@ -21,7 +21,7 @@ declare module "hono" {
 
 const port = Number(process.env.PORT) || 3000;
 const app = new Hono<{
-  Variables: {jwtPayload: { username: string }};
+  Variables: { jwtPayload: { username: string } };
 }>();
 
 app.use(logger());

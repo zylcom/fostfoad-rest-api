@@ -4,13 +4,16 @@
   "version": "1.0.0",
   "description": "RESTful API",
   "main": "api/index.js",
+  "type": "module",
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
     "dev": "tsx watch index.ts",
+    "build": "tsc",
     "postinstall": "prisma generate",
-    "format": "prettier -w ."
+    "format": "prettier -w .",
+    "prepare": "husky"
   },
   "keywords": [
     "hono",
@@ -23,6 +26,7 @@
     "@prisma/client": "^5.18.0",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
+    "extensionless": "^1.9.9",
     "hono": "^4.5.8",
     "libphonenumber-js": "^1.11.7",
     "zod": "^3.23.8"
@@ -31,6 +35,7 @@
     "@faker-js/faker": "^8.4.1",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.16.1",
+    "husky": "^9.1.5",
     "prettier": "^3.3.3",
     "prisma": "^5.18.0",
     "tsx": "^4.7.1",
