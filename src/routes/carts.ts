@@ -12,4 +12,4 @@ cartsRoutes.get("/", async (c) => {
 });
 cartsRoutes.delete("/", (c) => c.text("Cart cleared"));
 
-export default cartsRoutes;
+export  {cartsRoutes};
