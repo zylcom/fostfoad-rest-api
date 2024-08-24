@@ -1,16 +1,16 @@
 import "dotenv/config";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { jwt } from "hono/jwt";
+//import { jwt } from "hono/jwt";
 import { logger } from "hono/logger";
-import usersRoutes from "./src/routes/users";
-import cartsRoutes from "./src/routes/carts";
-import authRoutes from "./src/routes/auth";
-import cartItemsRoutes from "./src/routes/cartItems";
-import reviewsRoutes from "./src/routes/reviews";
-import likesRoutes from "./src/routes/likes";
+//import usersRoutes from "./src/routes/users";
+//import cartsRoutes from "./src/routes/carts";
+//import authRoutes from "./src/routes/auth";
+//import cartItemsRoutes from "./src/routes/cartItems";
+//import reviewsRoutes from "./src/routes/reviews";
+//import likesRoutes from "./src/routes/likes";
 import { HTTPException } from "hono/http-exception";
-import { authMiddleware } from "./src/middlewares";
+//import { authMiddleware } from "./src/middlewares";
 import { Prisma } from "@prisma/client";
 
 declare module "hono" {
@@ -29,16 +29,16 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-app.route("/auth", authRoutes);
-
-app.use((c, next) => jwt({ secret: process.env.JWT_SECRET_KEY! })(c, next));
-app.use(authMiddleware);
-
-app.route("/users", usersRoutes);
-app.route("/carts", cartsRoutes);
-app.route("/carts/items", cartItemsRoutes);
-app.route("/reviews", reviewsRoutes);
-app.route("/likes", likesRoutes);
+//app.route("/auth", authRoutes);
+//
+//app.use((c, next) => jwt({ secret: process.env.JWT_SECRET_KEY! })(c, next));
+//app.use(authMiddleware);
+//
+//app.route("/users", usersRoutes);
+//app.route("/carts", cartsRoutes);
+//app.route("/carts/items", cartItemsRoutes);
+//app.route("/reviews", reviewsRoutes);
+//app.route("/likes", likesRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
