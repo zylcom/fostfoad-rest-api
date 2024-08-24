@@ -44,4 +44,4 @@ authRoutes.post("/register", zValidator("json", registerUserValidation, async (r
     const token = await sign({ username: user.username, exp: Math.floor(Date.now() / 1000) + 60 * 15 }, process.env.JWT_SECRET_KEY);
     return c.json({ status: "success", code: 201, data: { token } }, 201);
 }));
-export default authRoutes;
+export { authRoutes };

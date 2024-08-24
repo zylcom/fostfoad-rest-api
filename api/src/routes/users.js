@@ -10,4 +10,4 @@ usersRoutes.get("/current", async (c) => {
     return c.json({ data: { user } }, 200);
 });
 usersRoutes.patch("/current", (c) => c.json({ data: { message: "Coming soon" } }));
-export default usersRoutes;
+export { usersRoutes };

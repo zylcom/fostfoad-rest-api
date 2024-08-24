@@ -12,4 +12,4 @@ productsRoutes.get("/:slug", async (c) => {
   return c.json({});
 });
 
-export  {productsRoutes};
+export { productsRoutes };
