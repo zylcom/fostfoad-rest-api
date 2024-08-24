@@ -3,7 +3,7 @@
   "name": "fostfoad-rest-api",
   "version": "1.0.0",
   "description": "RESTful API",
-  "main": "api/index.js",
+  "main": "api/index.ts",
   "type": "module",
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -14,7 +14,7 @@
     "postinstall": "prisma generate",
     "format": "prettier -w .",
     "prepare": "husky",
-    "start": "node api/index.js"
+    "start": "node dist/api/index.js"
   },
   "keywords": [
     "hono",
