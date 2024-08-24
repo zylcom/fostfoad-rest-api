@@ -3,18 +3,18 @@
   "name": "fostfoad-rest-api",
   "version": "1.0.0",
   "description": "RESTful API",
-  "main": "api/index.ts",
+  "main": "api/index.js",
   "type": "module",
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
-    "dev": "tsx watch api/index.ts",
-    "build": "tsc",
+    "dev": "tsx watch index.ts",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "postinstall": "prisma generate",
     "format": "prettier -w .",
     "prepare": "husky",
-    "start": "node --import=extensionless/register public/api/index.js"
+    "start": "node api/index.js"
   },
   "keywords": [
     "hono",
@@ -27,7 +27,6 @@
     "@prisma/client": "^5.18.0",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
-    "extensionless": "^1.9.9",
     "hono": "^4.5.8",
     "libphonenumber-js": "^1.11.7",
     "zod": "^3.23.8"
@@ -39,6 +38,7 @@
     "husky": "^9.1.5",
     "prettier": "^3.3.3",
     "prisma": "^5.18.0",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.7.1",
     "typescript": "^5.5.4"
   }

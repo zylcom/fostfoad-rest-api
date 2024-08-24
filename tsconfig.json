@@ -3,11 +3,15 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "outDir": "public",
+    "outDir": "api",
     "strict": true,
     "skipLibCheck": true,
     "types": ["node"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
+  },
+  "tsc-alias": {
+    "verbose": true,
+    "resolveFullPaths": true
   }
 }
