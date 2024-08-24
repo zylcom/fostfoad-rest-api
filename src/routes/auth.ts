@@ -64,4 +64,4 @@ authRoutes.post(
   }),
 );
 
-export { authRoutes };
+export default authRoutes;
