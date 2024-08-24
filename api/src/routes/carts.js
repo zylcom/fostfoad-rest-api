@@ -7,4 +7,4 @@ cartsRoutes.get("/", async (c) => {
     return c.json({ status: "success", code: 200, data: { cart } });
 });
 cartsRoutes.delete("/", (c) => c.text("Cart cleared"));
-export { cartsRoutes };
+export default cartsRoutes;

@@ -42,4 +42,4 @@ cartItemsRoutes.get("/:productSlug", zValidator("param", findItemValidation, asy
     return c.json({ status: "success", code: 200, data: { item } }, 200);
 }));
 cartItemsRoutes.delete("/:productSlug", (c) => c.text(c.req.param("productSlug")));
-export { cartItemsRoutes };
+export default cartItemsRoutes;

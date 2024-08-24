@@ -58,4 +58,4 @@ cartItemsRoutes.get(
 );
 cartItemsRoutes.delete("/:productSlug", (c) => c.text(c.req.param("productSlug")));
 
-export default cartItemsRoutes ;
+export default cartItemsRoutes;
