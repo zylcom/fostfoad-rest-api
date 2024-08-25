@@ -12,6 +12,7 @@ import likesRoutes from "./src/routes/likes";
 import { HTTPException } from "hono/http-exception";
 import { authMiddleware } from "./src/middlewares";
 import { Prisma } from "@prisma/client";
+import tagsRoutes from "./src/routes/tags";
 
 declare module "hono" {
   interface ContextVariableMap {
@@ -30,6 +31,7 @@ app.get("/", (c) => {
 });
 
 app.route("/auth", authRoutes);
+app.route("/tags", tagsRoutes);
 
 app.use((c, next) => jwt({ secret: process.env.JWT_SECRET_KEY! })(c, next));
 app.use(authMiddleware);
