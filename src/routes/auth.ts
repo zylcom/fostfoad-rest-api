@@ -12,27 +12,46 @@ const authRoutes = new Hono();
 authRoutes.post(
   "/login",
   zValidator("json", loginUserValidation, async (result, c) => {
-    if (!result.success) throw new HTTPException(400, { message: "Validation error.", cause: parseError(result.error) });
+    if (!result.success) {
+      throw new HTTPException(400, { message: "Validation error.", cause: parseError(result.error) });
+    }
 
     const { username, password } = result.data;
-    const user = await prisma.user.findUnique({ where: { username } });
 
-    if (!user) throw new HTTPException(401, { message: "We couldn't find an account matching those credentials." });
+    try {
+      const user = await prisma.user.findUnique({
+        where: { username },
+        select: { id: true, password: true },
+      });
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        throw new HTTPException(401, { message: "Invalid credentials." });
+      }
 
-    if (!isValidPassword) throw new HTTPException(401, { message: "We couldn't find an account matching those credentials." });
+      const token = await sign(
+        { username, iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 60 * 15 },
+        process.env.JWT_SECRET_KEY!,
+      ).catch((error) => {
+        throw new HTTPException(500, { message: "Error generating token.", cause: error });
+      });
 
-    const token = await sign({ username: user.username, exp: Math.floor(Date.now() / 1000) + 60 * 15 }, process.env.JWT_SECRET_KEY!);
-
-    return c.json({ status: "success", code: 200, data: { token } });
+      return c.json({ status: "success", code: 200, data: { token } });
+    } catch (error) {
+      if (error instanceof HTTPException) {
+        throw error;
+      } else {
+        throw new HTTPException(500, { message: "Internal server error." });
+      }
+    }
   }),
 );
 
 authRoutes.post(
   "/register",
   zValidator("json", registerUserValidation, async (result, c) => {
-    if (!result.success) throw new HTTPException(400, { message: "Validation error.", cause: parseError(result.error) });
+    if (!result.success) {
+      throw new HTTPException(400, { message: "Validation error.", cause: parseError(result.error) });
+    }
 
     const {
       username,
@@ -40,27 +59,42 @@ authRoutes.post(
       password,
       phonenumberForm: { number },
     } = result.data;
-    const countUser = await prisma.user.count({ where: { username } });
 
-    if (countUser) throw new HTTPException(409, { message: "Username already exists." });
+    try {
+      const existingUser = await prisma.user.findUnique({ where: { username } });
 
-    const passwordHash = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({
-      data: {
-        username,
-        password: passwordHash,
-        phonenumber: number,
-        profile: { create: { name } },
-        cart: { create: {} },
-      },
-      select: {
-        id: true,
-        username: true,
-      },
-    });
-    const token = await sign({ username: user.username, exp: Math.floor(Date.now() / 1000) + 60 * 15 }, process.env.JWT_SECRET_KEY!);
+      if (existingUser) {
+        throw new HTTPException(409, { message: "Username already exists." });
+      }
 
-    return c.json({ status: "success", code: 201, data: { token } }, 201);
+      const passwordHash = await bcrypt.hash(password, 10);
+
+      await prisma.user.create({
+        data: {
+          username,
+          password: passwordHash,
+          phonenumber: number,
+          profile: { create: { name } },
+          cart: { create: {} },
+        },
+        select: { id: true, username: true },
+      });
+
+      const token = await sign(
+        { username, iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 60 * 15 },
+        process.env.JWT_SECRET_KEY!,
+      ).catch((error) => {
+        throw new HTTPException(500, { message: "Error generating token.", cause: error });
+      });
+
+      return c.json({ status: "success", code: 201, data: { token } }, 201);
+    } catch (error) {
+      if (error instanceof HTTPException) {
+        throw error;
+      } else {
+        throw new HTTPException(500, { message: "Internal server error." });
+      }
+    }
   }),
 );
 
