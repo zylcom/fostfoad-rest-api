@@ -1,5 +1,7 @@
 {
   "buildCommand": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-  "builds": [{ "src": "api/index.js", "use": "@vercel/node" }],
+  "functions": {
+    "api/index.js": {}
+  },
   "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }
