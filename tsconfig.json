@@ -4,7 +4,7 @@
     "module": "ESNext",
     "esModuleInterop": true,
     "moduleResolution": "Bundler",
-    "outDir": "api",
+    "outDir": "dist",
     "strict": true,
     "skipLibCheck": true,
     "types": ["node", "jest"],

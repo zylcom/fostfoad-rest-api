@@ -9,7 +9,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
-    "dev": "tsx watch index.ts",
+    "dev": "tsx watch api/index.ts",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "postinstall": "prisma generate",
     "db:reset": "prisma migrate reset -f --skip-seed",
