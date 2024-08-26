@@ -1,0 +1,57 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Continuous Integration
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  automation_testing:
+    environment: production
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [20.x]
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: fostfoad_app
+          POSTGRES_PASSWORD: root
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install Deps
+        run: npm ci
+
+      - name: Prisma migration & test
+        env:
+          DATABASE_URL: postgresql://postgres:root@localhost:5432/fostfoad_app?schema=public&connection_limit=5&pool_timeout=0
+          DIRECT_URL: postgresql://postgres:root@localhost:5432/fostfoad_app?schema=public&connection_limit=5&pool_timeout=0
+          FRONT_END_BASE_URL: ${{ vars.FRONT_END_BASE_URL }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          MIDTRANS_SERVER_KEY: ${{ secrets.MIDTRANS_SERVER_KEY }}
+        run: |
+          npx prisma migrate deploy
+          npm test
