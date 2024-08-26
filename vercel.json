@@ -1,7 +1,7 @@
 {
   "buildCommand": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
   "functions": {
-    "api/index.js": {
+    "index.ts": {
       "maxDuration": 10
     }
   },
