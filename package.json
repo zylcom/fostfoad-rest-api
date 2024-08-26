@@ -12,6 +12,8 @@
     "dev": "tsx watch index.ts",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "postinstall": "prisma generate",
+    "db:reset": "prisma migrate reset -f --skip-seed",
+    "test": "jest -iv",
     "format": "prettier -w .",
     "prepare": "husky",
     "start": "node api/index.js"
@@ -33,11 +35,15 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
+    "@jest/globals": "^29.7.0",
     "@types/bcrypt": "^5.0.2",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.16.1",
     "husky": "^9.1.5",
+    "jest": "^29.7.0",
     "prettier": "^3.3.3",
     "prisma": "^5.18.0",
+    "ts-jest": "^29.2.5",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.7.1",
     "typescript": "^5.5.4"

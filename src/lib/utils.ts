@@ -8,8 +8,6 @@ const generatedId: number[] = [];
 export function parseError(error: ZodError) {
   let errors: Record<string, string> = {};
 
-  console.log(error.issues);
-
   error.issues.forEach((err) => {
     errors = { ...errors, [err.path[0]]: err.message };
   });

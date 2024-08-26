@@ -2,14 +2,16 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
+    "esModuleInterop": true,
     "moduleResolution": "Bundler",
     "outDir": "api",
     "strict": true,
     "skipLibCheck": true,
-    "types": ["node"],
+    "types": ["node", "jest"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
   },
+  "exclude": ["src/__test__"],
   "tsc-alias": {
     "verbose": true,
     "resolveFullPaths": true
