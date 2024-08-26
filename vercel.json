@@ -1,7 +1,9 @@
 {
   "buildCommand": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
   "functions": {
-    "api/index.js": {}
+    "api/index.js": {
+      "maxDuration": 10
+    }
   },
   "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }
