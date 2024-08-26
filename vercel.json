@@ -1,5 +1,4 @@
 {
-  "buildCommand": "npm run build",
   "builds": [{ "src": "api/index.js", "use": "@vercel/node" }],
   "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }
