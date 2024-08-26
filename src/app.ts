@@ -40,9 +40,9 @@ app.route("/reviews", reviewsRoutes);
 app.route("/likes", likesRoutes);
 
 app.onError((err, c) => {
-  if (err instanceof HTTPException) {
-    //console.log(c.error?.message, err.message);
+  console.log(c.error?.message, err.message);
 
+  if (err instanceof HTTPException) {
     return c.json(
       {
         status: "error",
@@ -56,7 +56,7 @@ app.onError((err, c) => {
     );
   }
 
-  return c.json(err);
+  return c.json({ status: "error", code: 500, data: { message: err.message } });
 });
 
 export default app;
