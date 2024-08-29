@@ -47,8 +47,8 @@ app.onError((err, c) => {
       {
         status: "error",
         code: err.status,
+        message: err.message,
         errors: {
-          message: err.message,
           ...(err.cause as Object),
         },
       },
@@ -56,7 +56,7 @@ app.onError((err, c) => {
     );
   }
 
-  return c.json({ status: "error", code: 500, data: { message: err.message } });
+  return c.json({ status: "error", code: 500, data: { message: err.message } }, 500);
 });
 
 export default app;

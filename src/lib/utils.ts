@@ -2,15 +2,24 @@ import { ZodError } from "zod";
 import { CartItem } from "../schema/cartItem.schema";
 import { prisma } from "../database/client";
 import { faker } from "@faker-js/faker";
+import { Record } from "@prisma/client/runtime/library";
 
 const generatedId: number[] = [];
 
-export function parseError(error: ZodError) {
-  let errors: Record<string, string> = {};
+export function parseError(zodError: ZodError) {
+  const errors = zodError.issues.reduce((acc: Record<string, any>, issue) => {
+    if (issue.path.length === 1) {
+      acc[issue.path[0]] = issue.message;
+    } else {
+      const paths = issue.path.reduceRight((prev, current, index) => {
+        return { [current]: index === issue.path.length - 1 ? issue.message : { ...prev } };
+      }, {});
 
-  error.issues.forEach((err) => {
-    errors = { ...errors, [err.path[0]]: err.message };
-  });
+      acc = { ...acc, ...paths };
+    }
+
+    return acc;
+  }, {});
 
   return errors;
 }
