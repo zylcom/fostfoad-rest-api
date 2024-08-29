@@ -13,7 +13,7 @@ import tagsRoutes from "./routes/tags.js";
 const app = new Hono();
 app.use(logger());
 app.get("/", (c) => {
-  return c.text("Hello Hono!");
+    return c.text("Hello Hono!");
 });
 app.route("/auth", authRoutes);
 app.route("/tags", tagsRoutes);
@@ -25,20 +25,17 @@ app.route("/carts/items", cartItemsRoutes);
 app.route("/reviews", reviewsRoutes);
 app.route("/likes", likesRoutes);
 app.onError((err, c) => {
-  if (err instanceof HTTPException) {
-    //console.log(c.error?.message, err.message);
-    return c.json(
-      {
-        status: "error",
-        code: err.status,
-        errors: {
-          message: err.message,
-          ...err.cause,
-        },
-      },
-      err.status,
-    );
-  }
-  return c.json(err);
+    console.log(c.error?.message, err.message);
+    if (err instanceof HTTPException) {
+        return c.json({
+            status: "error",
+            code: err.status,
+            message: err.message,
+            errors: {
+                ...err.cause,
+            },
+        }, err.status);
+    }
+    return c.json({ status: "error", code: 500, data: { message: err.message } }, 500);
 });
 export default app;
