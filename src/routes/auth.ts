@@ -1,17 +1,17 @@
 import bcrypt from "bcrypt";
-import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { loginUserValidation, registerUserValidation } from "../validation/auth.validation";
-import { parseError } from "../lib/utils";
-import { prisma } from "../database/client";
 import { HTTPException } from "hono/http-exception";
 import { sign } from "hono/jwt";
+import { zValidator } from "@hono/zod-validator";
+import { parseError } from "../lib/utils";
+import { prisma } from "../database/client";
+import { UserRegisterSchema, UserLoginSchema } from "../schema/user.schema";
 
 const authRoutes = new Hono();
 
 authRoutes.post(
   "/login",
-  zValidator("json", loginUserValidation, async (result, c) => {
+  zValidator("json", UserLoginSchema, async (result, c) => {
     if (!result.success) {
       throw new HTTPException(400, { message: "Validation error.", cause: parseError(result.error) });
     }
@@ -35,7 +35,7 @@ authRoutes.post(
         throw new HTTPException(500, { message: "Error generating token.", cause: error });
       });
 
-      return c.json({ status: "success", code: 200, data: { token } });
+      return c.json({ status: "success", code: 200, message: "Login successfully", data: { token } }, 200);
     } catch (error) {
       if (error instanceof HTTPException) {
         throw error;
@@ -48,16 +48,16 @@ authRoutes.post(
 
 authRoutes.post(
   "/register",
-  zValidator("json", registerUserValidation, async (result, c) => {
+  zValidator("json", UserRegisterSchema, async (result, c) => {
     if (!result.success) {
       throw new HTTPException(400, { message: "Validation error.", cause: parseError(result.error) });
     }
 
     const {
       username,
-      name,
       password,
-      phonenumberForm: { number },
+      profile: { name },
+      phonenumber: { number },
     } = result.data;
 
     try {
@@ -87,7 +87,7 @@ authRoutes.post(
         throw new HTTPException(500, { message: "Error generating token.", cause: error });
       });
 
-      return c.json({ status: "success", code: 201, data: { token } }, 201);
+      return c.json({ status: "success", code: 201, message: "Register successfully", data: { token } }, 201);
     } catch (error) {
       if (error instanceof HTTPException) {
         throw error;

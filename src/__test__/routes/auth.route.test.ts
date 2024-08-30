@@ -2,7 +2,6 @@ import { hash } from "bcrypt";
 import { prisma } from "../../database/client";
 import authRoutes from "../../routes/auth";
 import app from "../../app";
-import exp from "constants";
 
 describe("POST /auth/register", () => {
   beforeAll(async () => {
@@ -29,67 +28,125 @@ describe("POST /auth/register", () => {
   it("should can create new user", async () => {
     const res = await authRoutes.request("/register", {
       method: "POST",
-      body: JSON.stringify({ name: "Hono test user", password: "rahasia123", username: "hono-user", phonenumberForm: { number: "0987654321" } }),
+      body: JSON.stringify({ profile: { name: "Hono test user" }, password: "rahasia123", username: "hono-user", phonenumber: { number: "0987654321" } }),
       headers: new Headers({ "Content-Type": "application/json" }),
     });
 
+    const resJson = await res.json();
+
     expect(res.status).toBe(201);
-    expect(await res.json()).toHaveProperty("data.token");
+    expect(resJson).toHaveProperty("data.token");
+    expect(resJson).toHaveProperty("message");
+    expect(resJson).toHaveProperty("status");
+    expect(resJson).toHaveProperty("code");
+    expect(resJson.status).toBe("success");
   });
 
   it("should not create user if username already used", async () => {
     const res = await app.request("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ name: "Hono test user", password: "rahasia123", username: "hono-user", phonenumberForm: { number: "0987654321" } }),
+      body: JSON.stringify({ profile: { name: "Hono test user" }, password: "rahasia123", username: "hono-user", phonenumber: { number: "0987654321" } }),
       headers: new Headers({ "Content-Type": "application/json" }),
     });
 
+    const resJson = await res.json();
+
     expect(res.status).toBe(409);
-    expect(await res.json()).toHaveProperty("errors");
+    expect(resJson).toHaveProperty("errors");
+    expect(resJson).toHaveProperty("message");
+    expect(resJson).toHaveProperty("status");
+    expect(resJson).toHaveProperty("code");
+    expect(resJson.status).toBe("error");
   });
 
   it("should not create user if username input is empty", async () => {
     const res = await app.request("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ name: "Hono test user", password: "rahasia123", username: "", phonenumberForm: { number: "0987654321" } }),
+      body: JSON.stringify({ name: "Hono test user", password: "rahasia123", username: "", phonenumber: { number: "0987654321" } }),
       headers: new Headers({ "Content-Type": "application/json" }),
     });
 
+    const resJson = await res.json();
+
     expect(res.status).toBe(400);
-    expect(await res.json()).toHaveProperty("errors.username");
+    expect(resJson).toHaveProperty("errors.username");
+    expect(resJson).toHaveProperty("message");
+    expect(resJson).toHaveProperty("status");
+    expect(resJson).toHaveProperty("code");
+    expect(resJson.status).toBe("error");
   });
 
   it("should not create user if name input is empty", async () => {
     const res = await app.request("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ name: "", password: "rahasia123", username: "username", phonenumberForm: { number: "0987654321" } }),
+      body: JSON.stringify({ profile: { name: "" }, password: "rahasia123", username: "username", phonenumber: { number: "0987654321" } }),
       headers: new Headers({ "Content-Type": "application/json" }),
     });
 
+    const resJson = await res.json();
+
     expect(res.status).toBe(400);
-    expect(await res.json()).toHaveProperty("errors.name");
+    expect(resJson).toHaveProperty("errors.profile.name");
+    expect(resJson).toHaveProperty("message");
+    expect(resJson).toHaveProperty("status");
+    expect(resJson).toHaveProperty("code");
+    expect(resJson.status).toBe("error");
   });
 
   it("should not create user if password input is empty", async () => {
     const res = await app.request("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ name: "Hono test user", password: "", username: "hono-user", phonenumberForm: { number: "0987654321" } }),
+      body: JSON.stringify({ profile: { name: "Hono test user" }, password: "", username: "hono-user", phonenumber: { number: "0987654321" } }),
       headers: new Headers({ "Content-Type": "application/json" }),
     });
 
+    const resJson = await res.json();
+
     expect(res.status).toBe(400);
-    expect(await res.json()).toHaveProperty("errors.password");
+    expect(resJson).toHaveProperty("errors.password");
+    expect(resJson).toHaveProperty("message");
+    expect(resJson).toHaveProperty("status");
+    expect(resJson).toHaveProperty("code");
+    expect(resJson.status).toBe("error");
   });
 
-  it("should not create user if phonenumberForm input is empty", async () => {
+  it("should not create user if phonenumber input is empty", async () => {
     const res = await app.request("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ name: "Hono test user", password: "rahasia123", username: "hono-user", phonenumberForm: {} }),
+      body: JSON.stringify({ profile: { name: "Hono test user" }, password: "rahasia123", username: "hono-user", phonenumber: {} }),
       headers: new Headers({ "Content-Type": "application/json" }),
     });
 
+    const resJson = await res.json();
+
     expect(res.status).toBe(400);
-    expect(await res.json()).toHaveProperty("errors.phonenumberForm");
+    expect(resJson).toHaveProperty("errors.phonenumber");
+    expect(resJson).toHaveProperty("message");
+    expect(resJson).toHaveProperty("status");
+    expect(resJson).toHaveProperty("code");
+    expect(resJson.status).toBe("error");
+  });
+
+  it("should not create user if phonenumber is invalid", async () => {
+    const res = await app.request("/auth/register", {
+      method: "POST",
+      body: JSON.stringify({
+        profile: { name: "Hono test user" },
+        password: "rahasia123",
+        username: "hono-user",
+        phonenumber: { number: "0101010101", countryCode: "invalid-country-code" },
+      }),
+      headers: new Headers({ "Content-Type": "application/json" }),
+    });
+
+    const resJson = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(resJson).toHaveProperty("errors.phonenumber");
+    expect(resJson).toHaveProperty("message");
+    expect(resJson).toHaveProperty("status");
+    expect(resJson).toHaveProperty("code");
+    expect(resJson.status).toBe("error");
   });
 });
 
@@ -122,8 +179,14 @@ describe("POST /auth/login", () => {
       headers: new Headers({ "Content-Type": "application/json" }),
     });
 
+    const resJson = await res.json();
+
     expect(res.status).toBe(200);
-    expect(await res.json()).toHaveProperty("data.token");
+    expect(resJson).toHaveProperty("data.token");
+    expect(resJson).toHaveProperty("message");
+    expect(resJson).toHaveProperty("status");
+    expect(resJson).toHaveProperty("code");
+    expect(resJson.status).toBe("success");
   });
 
   it("should not login if user credentials not valid", async () => {
@@ -133,8 +196,14 @@ describe("POST /auth/login", () => {
       headers: new Headers({ "Content-Type": "application/json" }),
     });
 
+    const resJson = await res.json();
+
     expect(res.status).toBe(401);
-    expect(await res.json()).toHaveProperty("errors.message");
+    expect(resJson).toHaveProperty("errors");
+    expect(resJson).toHaveProperty("message");
+    expect(resJson).toHaveProperty("status");
+    expect(resJson).toHaveProperty("code");
+    expect(resJson.status).toBe("error");
   });
 
   it("should not login if username input is empty", async () => {
@@ -144,8 +213,14 @@ describe("POST /auth/login", () => {
       headers: new Headers({ "Content-Type": "application/json" }),
     });
 
+    const resJson = await res.json();
+
     expect(res.status).toBe(400);
-    expect(await res.json()).toHaveProperty("errors.username");
+    expect(resJson).toHaveProperty("errors.username");
+    expect(resJson).toHaveProperty("message");
+    expect(resJson).toHaveProperty("status");
+    expect(resJson).toHaveProperty("code");
+    expect(resJson.status).toBe("error");
   });
 
   it("should not login if password input is empty", async () => {
@@ -155,7 +230,13 @@ describe("POST /auth/login", () => {
       headers: new Headers({ "Content-Type": "application/json" }),
     });
 
+    const resJson = await res.json();
+
     expect(res.status).toBe(400);
-    expect(await res.json()).toHaveProperty("errors.password");
+    expect(resJson).toHaveProperty("errors.password");
+    expect(resJson).toHaveProperty("message");
+    expect(resJson).toHaveProperty("status");
+    expect(resJson).toHaveProperty("code");
+    expect(resJson.status).toBe("error");
   });
 });

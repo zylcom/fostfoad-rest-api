@@ -11,7 +11,7 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
   },
-  "exclude": ["src/__test__"],
+  "exclude": ["src/__test__", "prisma/seed.ts"],
   "tsc-alias": {
     "verbose": true,
     "resolveFullPaths": true
